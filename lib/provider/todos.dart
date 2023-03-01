@@ -50,4 +50,10 @@ class TodosProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void removeTodo(Todo todo) {
+    _todos.remove(todo);
+
+    notifyListeners();
+  }
 }
