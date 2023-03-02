@@ -6,6 +6,7 @@ import 'package:todo_app/provider/todos.dart';
 import 'package:todo_app/utils.dart';
 
 import '../models/todo.dart';
+import '../page/edit_todo_page.dart';
 
 class TodoWidget extends StatelessWidget {
   final Todo todo;
@@ -28,7 +29,7 @@ class TodoWidget extends StatelessWidget {
               dismissible: DismissiblePane(onDismissed: () {}),
               children: [
                 SlidableAction(
-                  onPressed: (_) {},
+                  onPressed: (BuildContext context) => editTodo(context, todo),
                   backgroundColor: Colors.green,
                   label: 'Edit',
                   icon: Icons.edit,
@@ -53,50 +54,53 @@ class TodoWidget extends StatelessWidget {
         ),
       );
 
-  Widget buildTodo(BuildContext context) => Container(
-        color: Colors.white,
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Checkbox(
-              activeColor: Theme.of(context).primaryColor,
-              checkColor: Colors.white,
-              value: todo.isDone,
-              onChanged: (_) {
-                final provider =
-                    Provider.of<TodosProvider>(context, listen: false);
+  Widget buildTodo(BuildContext context) => GestureDetector(
+        onTap: () => editTodo(context, todo),
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Checkbox(
+                activeColor: Theme.of(context).primaryColor,
+                checkColor: Colors.white,
+                value: todo.isDone,
+                onChanged: (_) {
+                  final provider =
+                      Provider.of<TodosProvider>(context, listen: false);
 
-                final isDone = provider.toggleTodoStatus(todo);
+                  final isDone = provider.toggleTodoStatus(todo);
 
-                Utils.showSnackBar(context,
-                    isDone ? 'Task Completed' : 'Task mark incomplete');
-              },
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    todo.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 22,
-                    ),
-                  ),
-                  if (todo.description.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        todo.description,
-                        style: const TextStyle(fontSize: 20, height: 1.5),
+                  Utils.showSnackBar(context,
+                      isDone ? 'Task Completed' : 'Task mark incomplete');
+                },
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      todo.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 22,
                       ),
                     ),
-                ],
+                    if (todo.description.isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          todo.description,
+                          style: const TextStyle(fontSize: 20, height: 1.5),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
@@ -106,4 +110,7 @@ class TodoWidget extends StatelessWidget {
 
     Utils.showSnackBar(context, 'Deleted the task');
   }
+
+  void editTodo(BuildContext context, Todo todo) => Navigator.of(context)
+      .push(MaterialPageRoute(builder: (context) => EditTodoPage(todo: todo)));
 }
